@@ -1,12 +1,41 @@
-import hre from "hardhat";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function main() {
-  const Contract = await hre.ethers.getContractFactory("BalanceStorage");
-  const contract = await Contract.deploy();
+  const [deployer] = await ethers.getSigners();
 
-  await contract.waitForDeployment();
+  console.log("Deploying with:", deployer.address);
 
-  console.log("Contract deployed at:", await contract.getAddress());
+  const SimpleBank = await ethers.getContractFactory("SimpleBank");
+  const simpleBank = await SimpleBank.deploy();
+
+  console.log("SimpleBank deployed to:", simpleBank.target);
+
+  const deploymentsDir = path.join(__dirname, "../deployments/localhost");
+  const filePath = path.join(deploymentsDir, "SimpleBank.json");
+
+  fs.mkdirSync(deploymentsDir, { recursive: true });
+
+  fs.writeFileSync(
+    filePath,
+    JSON.stringify(
+      {
+        address: simpleBank.target,
+        abi: SimpleBank.interface.formatJson(),
+      },
+      null,
+      2
+    )
+  );
+
+  console.log("Deployment info saved to:", filePath);
 }
 
-main();
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

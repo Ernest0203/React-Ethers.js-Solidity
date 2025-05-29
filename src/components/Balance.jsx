@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { balanceStorageAbi } from "../abi";
+import SimpleBankJson from "../../deployments/localhost/SimpleBank.json";
 
-const CONTRACT_ADDRESS = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+const CONTRACT_ADDRESS = SimpleBankJson.address;
+const balanceStorageAbi = SimpleBankJson.abi;
 const LOCAL_CHAIN_ID = "0x7a69"; // 31337 в hex
 
 export default function BalanceComponent() {
